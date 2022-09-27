@@ -1,0 +1,2 @@
+echo "clean xmoves and omoves.."
+python3 ./clean.py

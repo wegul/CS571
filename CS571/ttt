@@ -1,0 +1,30 @@
+echo "clean xmoves and omoves.."
+python3 ./clean.py
+
+
+if [ "$3" = "x" ]
+then
+    echo "run x.py $1 $2 $3 first"
+    python3 x.py $1 $2 $3 &
+    sleep .05
+    python3 o.py $1 $2 $3
+    # echo "run x.py then o.py"
+    # gnome-terminal -t " playerX"  -c " python3 x.py $1 $2 $3 ; exec bash;" 
+    # gnome-terminal -t " playerO"  -c " python3 o.py $1 $2 $3 ; exec bash;" 
+    
+else 
+    echo "run o.py $1 $2 $3 first"
+    python3 o.py $1 $2 $3 &
+    sleep .05
+    python3 x.py $1 $2 $3
+    # echo "run o.py then x.py"
+    # gnome-terminal -t " playerO"  -c " python3 o.py $1 $2 $3 ; exec bash;" 
+    # gnome-terminal -t " playerX"  -c " python3 x.py $1 $2 $3 ; exec bash;"
+fi
+wait
+echo "==ended=="
+
+
+
+# python3 ./x.py &
+# python3 ./o.py &

@@ -1,0 +1,2 @@
+echo "run x.py $1 $2 $3"
+python3 ./x.py $1 $2 $3
