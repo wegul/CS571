@@ -39,6 +39,127 @@ def readMove(msg):
         board[row][col]=0
 
 
+
+def heuristic_d(state):
+    global n,k
+    hvalue=0
+    xCnt=0
+    oCnt=0
+    maxXCnt=0
+    maxOCnt=0
+    # check rows
+    for i in range(0,n):
+        xCnt=0
+        oCnt=0
+        for j in range(0,n):
+            if state[i,j] == 1:
+                xCnt+=1
+                oCnt=0
+                maxXCnt=max(xCnt,maxXCnt)
+            elif state[i,j] == 0:
+                xCnt=0
+                oCnt+=1
+                maxOCnt=max(oCnt, maxOCnt)
+            else:
+                xCnt=0
+                oCnt=0
+        if xCnt >= k:
+            hvalue= np.inf
+            return hvalue
+        if oCnt>=k:
+            hvalue= -np.inf
+            return hvalue
+
+    xCnt=0
+    oCnt=0
+    maxXCnt=0
+    maxOCnt=0
+    # check cols
+    for j in range(0,n):
+        xCnt=0
+        oCnt=0
+        for i in range(0,n):
+            if state[i,j] == 1:
+                xCnt+=1
+                oCnt=0
+                maxXCnt=max(xCnt,maxXCnt)
+            elif state[i,j] == 0:
+                xCnt=0
+                oCnt+=1
+                maxOCnt=max(oCnt,maxOCnt)
+            else:
+                xCnt=0
+                oCnt=0
+        if xCnt >= k:
+            hvalue= np.inf
+            return hvalue
+        if oCnt>=k:
+            hvalue= -np.inf
+            return hvalue
+    xCnt=0
+    oCnt=0
+    maxXCnt=0
+    maxOCnt=0
+    # check diagnal leftup to right down
+    for i in range(0,n):
+        for j in range(0,n):
+            xCnt=0
+            oCnt=0
+            for m in range(0,n):
+                if i+m<0 or i+m>=n or j+m<0 or j+m >=n:
+                    continue
+                if state[i+m,j+m] == 1:
+                    xCnt+=1
+                    oCnt=0
+                    maxXCnt=max(xCnt,maxXCnt)
+                elif state[i+m,j+m] == 0:
+                    xCnt=0
+                    oCnt+=1
+                    maxOCnt=max(oCnt,maxOCnt)
+                else:
+                    xCnt=0
+                    oCnt=0
+            if xCnt >= k:
+                hvalue= np.inf
+                return hvalue
+            if oCnt>=k:
+                hvalue= -np.inf
+                return hvalue
+
+        
+    xCnt=0
+    oCnt=0
+    maxXCnt=0
+    maxOCnt=0
+    # check diagnal leftdown to rightup
+    for i in reversed(range(0,n)):
+        for j in range(0,n):
+            xCnt=0
+            oCnt=0
+            for m in range(0,n):
+                if i-m<0 or i-m>=n or j+m<0 or j+m >=n:
+                    continue
+                if state[i-m,j+m] == 1:
+                    xCnt+=1
+                    oCnt=0
+                    maxXCnt=max(xCnt,maxXCnt)
+                elif state[i-m,j+m] == 0:
+                    xCnt=0
+                    oCnt+=1
+                    maxOCnt=max(oCnt,maxOCnt)
+                else:
+                    xCnt=0
+                    oCnt=0
+                if xCnt >= k:
+                    hvalue= np.inf
+                    return hvalue
+                if oCnt>=k:
+                    hvalue= -np.inf
+                    return hvalue
+    
+    hvalue=pow(10,maxXCnt)-pow(10,maxOCnt)
+    return hvalue
+
 #check winning state, count rows,cols,diag1,diag2
 #improve: can be added to readmove()
 def heuristic(state):
@@ -144,10 +265,12 @@ def heuristic(state):
             
     return hvalue
 
-def minimax(state, isMaxmazing, alpha, beta):
+def minimax(state, isMaxmazing, alpha, beta, depth):
     global n,k
     hvalue=heuristic(state)
     if hvalue!=0:#someone won
+        return hvalue,state
+    if depth >3:
         return hvalue,state
 
     empty_space=0
@@ -168,7 +291,7 @@ def minimax(state, isMaxmazing, alpha, beta):
                 if state[i,j]>1:# is empty
                     nextstate=state.copy()
                     nextstate[i,j]=1
-                    Eval,Nstate=minimax(nextstate, not isMaxmazing, alpha, beta)
+                    Eval,Nstate=minimax(nextstate, not isMaxmazing, alpha, beta, depth+1)
 
                     if Eval>maxEval:
                         maxEval=Eval
@@ -187,7 +310,7 @@ def minimax(state, isMaxmazing, alpha, beta):
                     nextstate=state.copy()
                     nextstate[i,j]=0
 
-                    Eval, Nstate =minimax(nextstate, not isMaxmazing, alpha, beta)
+                    Eval, Nstate =minimax(nextstate, not isMaxmazing, alpha, beta,depth+1)
 
                     if Eval < minEval:
                         minEval=Eval
@@ -235,7 +358,7 @@ def main():
     
     while True:
         
-        hvalue, state= minimax(board,True, -np.inf, np.inf)
+        hvalue, state= minimax(board,True, -np.inf, np.inf,0)
 
         row=0
         col=0
