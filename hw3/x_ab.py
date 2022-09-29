@@ -265,12 +265,10 @@ def heuristic(state):
             
     return hvalue
 
-def minimax(state, isMaxmazing, alpha, beta, depth):
+def minimax(state, isMaxmazing, alpha, beta):
     global n,k
     hvalue=heuristic(state)
     if hvalue!=0:#someone won
-        return hvalue,state
-    if depth >3:
         return hvalue,state
 
     empty_space=0
@@ -291,7 +289,7 @@ def minimax(state, isMaxmazing, alpha, beta, depth):
                 if state[i,j]>1:# is empty
                     nextstate=state.copy()
                     nextstate[i,j]=1
-                    Eval,Nstate=minimax(nextstate, not isMaxmazing, alpha, beta, depth+1)
+                    Eval,Nstate=minimax(nextstate, not isMaxmazing, alpha, beta)
 
                     if Eval>maxEval:
                         maxEval=Eval
@@ -310,7 +308,7 @@ def minimax(state, isMaxmazing, alpha, beta, depth):
                     nextstate=state.copy()
                     nextstate[i,j]=0
 
-                    Eval, Nstate =minimax(nextstate, not isMaxmazing, alpha, beta,depth+1)
+                    Eval, Nstate =minimax(nextstate, not isMaxmazing, alpha, beta)
 
                     if Eval < minEval:
                         minEval=Eval
@@ -358,7 +356,7 @@ def main():
     
     while True:
         
-        hvalue, state= minimax(board,True, -np.inf, np.inf,0)
+        hvalue, state= minimax(board,True, -np.inf, np.inf)
 
         row=0
         col=0
